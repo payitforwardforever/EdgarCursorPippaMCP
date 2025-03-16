@@ -9,12 +9,12 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 # Try to load from the current directory, the parent directory, and the parent's parent directory
 load_dotenv()  # Try current directory
-if not os.getenv("OPENAI_API_KEY"):
+if not os.getenv("GEMMA_API_KEY"):
     # Try parent directory (mcp-pippa-memory)
     parent_env = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
     if os.path.exists(parent_env):
         load_dotenv(parent_env)
-if not os.getenv("OPENAI_API_KEY"):
+if not os.getenv("GEMMA_API_KEY"):
     # Try root directory (cwkMCPServers)
     root_env = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
     if os.path.exists(root_env):
@@ -40,7 +40,7 @@ MEMORY_INIT_LOG_PATH = os.path.join(LOGS_DIR, "memory_init.log")
 DEFAULT_SETTINGS = {
     "log_level": logging.INFO,  # Default to INFO level
     "db_path": DB_DIR,          # Database directory
-    "embedding_model": "text-embedding-3-small",  # OpenAI embedding model to use
+    "embedding_model": "gemma-embedding-model",  # Update to Gemma embedding model
     "similarity_top_k": 3,      # Number of results for similarity search
 }
 

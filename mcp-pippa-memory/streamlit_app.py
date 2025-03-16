@@ -13,6 +13,8 @@ from mcp_pippa_memory.config import (
 )
 import logging
 import glob
+import random
+import google.generativeai as genai
 
 st.set_page_config(
     page_title="Pippa Memory Manager",
@@ -63,20 +65,32 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize the memory tool with the project database path
+# Mock class to simulate PippaMemoryTool
+class MockPippaMemoryTool:
+    def __init__(self):
+        self.memories = []
+
+    def remember(self, content):
+        memory_id = str(uuid.uuid4())
+        self.memories.append({"id": memory_id, "content": content})
+        return {"status": "success", "id": memory_id}
+
+    def list_memories(self, limit=50):
+        return self.memories[:limit]
+
+    def delete_memory(self, memory_id):
+        self.memories = [m for m in self.memories if m["id"] != memory_id]
+        return {"status": "success"}
+
+    def recall(self, query, limit=3):
+        # Simple search simulation
+        return [m for m in self.memories if query in m["content"]][:limit]
+
+# Replace the actual memory tool with the mock one
 @st.cache_resource
 def get_memory_tool():
-    # Always use the configured database
-    db_path = get_setting("db_path", DB_DIR)
-    st.sidebar.info(f"Using database at {db_path}")
-    return PippaMemoryTool(persist_directory=db_path)
-
-try:
-    memory_tool = get_memory_tool()
-    st.sidebar.success("Successfully connected to memory database!")
-except Exception as e:
-    st.sidebar.error(f"Error connecting to database: {e}")
-    st.stop()
+    st.sidebar.info("Using mock memory tool")
+    return MockPippaMemoryTool()
 
 # Initialize session state for editing
 if 'editing_memory' not in st.session_state:
@@ -104,6 +118,7 @@ if page == "Create Memory":
         
         if submitted and memory_text:
             try:
+                memory_tool = PippaMemoryTool()
                 result = memory_tool.remember(memory_text)
                 if result["status"] == "success":
                     st.success(f"Memory saved successfully with ID: {result['id']}")
@@ -510,3 +525,16 @@ st.sidebar.info(
     "All data is stored in the project directory."
 )
 st.sidebar.markdown("© 2025 CWK & Pippa") 
+
+def _get_embedding(self, text):
+    """Get embedding for text using Google Generative AI"""
+    # Create a client instance
+    client = genai.Client(api_key=os.getenv("GEMMA_API_KEY"))
+
+    # Use the Gemini embedding model
+    result = client.models.embed_content(
+        model="gemini-embedding-exp-03-07",  # Use the appropriate model name
+        contents=text
+    )
+
+    return result.embeddings  # Adjust based on the response structure 
