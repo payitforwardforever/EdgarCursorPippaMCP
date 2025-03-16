@@ -151,5 +151,5 @@ output/
 *.swp
 *.old
 
-# Ignore the .cursor directory
+# Ignore the entire .cursor folder
 .cursor/
