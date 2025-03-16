@@ -150,3 +150,6 @@ output/
 *.backup
 *.swp
 *.old
+
+# Ignore the .cursor directory
+.cursor/
